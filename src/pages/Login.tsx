@@ -53,7 +53,7 @@ export function Login() {
       setError(error.message);
     } else {
       // Show toast message to confirm email
-      toast.success('A confirmation email has been sent. Please check your mail to confirm your account and login.', {
+      toast.success('Please check your mail to confirm your account and login.And please return to this page and go to login and press sign in.', {
         autoClose: false,
         closeOnClick: false,
         draggable: false,
