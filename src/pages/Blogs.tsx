@@ -42,7 +42,7 @@ export function Blogs() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors">
+    <div className="flex-grow bg-gradient-to-b from-indigo-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors">
       <div className={commonStyles.container}>
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <h1 className={`text-3xl font-bold text-indigo-600 dark:text-indigo-400 ${commonStyles.heading}`}>Bhakti and Beyond</h1>
