@@ -15,6 +15,7 @@ export function Login() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +36,7 @@ export function Login() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setInfoMessage('Wait for some time until you get a mail');
 
     // Check if email already exists
     const { data: existingUser, error: existingUserError } = await supabase
@@ -45,15 +47,17 @@ export function Login() {
 
     if (existingUser) {
       setError('Email already exists');
+      setInfoMessage('');
       return;
     }
 
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
+      setInfoMessage('');
     } else {
       // Show toast message to confirm email
-      toast.success('Please check your mail to confirm your account and login.And please return to this page and go to login and press sign in.', {
+      toast.success('A confirmation mail has been sent to your mail, confirm the signup in mail and you will be directed to the site.', {
         autoClose: false,
         closeOnClick: false,
         draggable: false,
@@ -138,6 +142,11 @@ export function Login() {
             >
               {isSignUp ? 'Sign Up' : 'Sign In'}
             </button>
+            {isSignUp && infoMessage && (
+              <div className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
+                {infoMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>
