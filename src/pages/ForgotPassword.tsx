@@ -23,17 +23,17 @@ export function ForgotPassword() {
     setError('');
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/`,
-      });
-      console.log(`${window.location.origin}/reset-password`);
+    //   const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    //     redirectTo: `${window.location.origin}/`,
+    //   });
+    //   console.log(`${window.location.origin}/reset-password`);
       
-    // const { data, error } = await supabase.auth.signInWithOtp({
-    //     email,
-    //     options: {
-    //       emailRedirectTo: 'https://tattva-blogs-2m98.vercel.app/'
-    //     }
-    //   })
+    const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: 'https://tattva-blogs-2m98.vercel.app/'
+        }
+      })
       
       
       if (error) throw error;
