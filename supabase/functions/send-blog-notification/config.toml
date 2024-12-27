@@ -1,0 +1,2 @@
+[functions.send-blog-notification]
+verify_jwt = true

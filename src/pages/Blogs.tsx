@@ -28,7 +28,6 @@ export function Blogs() {
       if (error) {
         console.error('Error fetching blogs:', error);
       } else {
-        console.log('Fetched blogs:', data); // Log the fetched blogs
         setBlogs(data as Blog[]);
       }
     };
