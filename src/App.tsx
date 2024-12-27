@@ -10,6 +10,7 @@ import { EditBlog } from './pages/EditBlog';
 import { PrivateRoute } from './components/PrivateRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotFound } from './pages/NotFound';
+import { ForgotPassword } from './pages/ForgotPassword';
 
 export function App() {
   return (
@@ -22,6 +23,7 @@ export function App() {
               <Route path="/" element={<Home />} />
               <Route path="/blog/:id" element={<BlogDetail />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route
                 path="/blogs"
                 element={

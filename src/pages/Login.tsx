@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ToastContainer, toast } from 'react-toastify';
@@ -201,6 +201,17 @@ export function Login() {
             >
               {isSignUp ? 'Sign Up' : 'Sign In'}
             </button>
+            {!isSignUp && (
+              <div className="flex items-center justify-between">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            )}
+            
             {!isSignUp && (
               <div className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
                 Don't have an account?{' '}
