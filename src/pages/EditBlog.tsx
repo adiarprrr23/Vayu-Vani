@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface Blog {
   id: string;
@@ -61,7 +63,7 @@ export function EditBlog() {
         video_url: blog.video_url,
         excerpt: blog.excerpt,
         published: blog.published,
-        author_id: currentUserId, // Update the author_id with the current user's ID
+        author_id: currentUserId,
       })
       .eq('id', id);
 
@@ -81,50 +83,54 @@ export function EditBlog() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 transition-colors">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Edit Blog</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-900 transition-colors">
+      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8">Edit Blog</h1>
       <form onSubmit={handleUpdate} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+          <label className="block text-sm sm:text-lg font-medium text-gray-700 dark:text-gray-300">Title</label>
           <input
             type="text"
             value={blog.title}
             onChange={(e) => setBlog({ ...blog, title: e.target.value })}
-            className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
+            className="mt-2 w-full px-4 py-3 sm:px-6 sm:py-4 text-base sm:text-lg border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content</label>
-          <textarea
+          <label className="block text-sm sm:text-lg font-medium text-gray-700 dark:text-gray-300">Content</label>
+          <ReactQuill
             value={blog.content}
-            onChange={(e) => setBlog({ ...blog, content: e.target.value })}
-            rows={10}
-            className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
-            required
+            onChange={(value) => setBlog({ ...blog, content: value })}
+            className="mt-2 w-full border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-gray-300"
+            theme="snow"
+            style={{
+              minHeight: '300px',
+              fontSize: '1rem',
+              padding: '1rem',
+            }}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Thumbnail URL</label>
+          <label className="block text-sm sm:text-lg font-medium text-gray-700 dark:text-gray-300">Thumbnail URL</label>
           <input
             type="url"
             value={blog.thumbnail_url}
             onChange={(e) => setBlog({ ...blog, thumbnail_url: e.target.value })}
-            className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
+            className="mt-2 w-full px-4 py-3 sm:px-6 sm:py-4 text-base sm:text-lg border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Reference Video URL</label>
+          <label className="block text-sm sm:text-lg font-medium text-gray-700 dark:text-gray-300">Reference Video URL</label>
           <input
             type="url"
             value={blog.video_url}
             onChange={(e) => setBlog({ ...blog, video_url: e.target.value })}
-            className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
+            className="mt-2 w-full px-4 py-3 sm:px-6 sm:py-4 text-base sm:text-lg border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
           />
         </div>
         <button
           type="submit"
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full py-3 px-4 sm:py-4 sm:px-6 text-base sm:text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
         >
           Update Blog
         </button>
