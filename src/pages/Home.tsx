@@ -118,7 +118,7 @@ export function Home() {
       if (error) {
         console.error('Error fetching blogs:', error);
       } else {
-        console.log(data);
+        // console.log(data);
         setBlogs(data as Blog[]);
       }
     };
