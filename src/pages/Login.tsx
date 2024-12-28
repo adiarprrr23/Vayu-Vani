@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Mail, Lock, User } from 'lucide-react';
-import { useNavigate,Link } from 'react-router-dom';
+import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ToastContainer, toast } from 'react-toastify';
@@ -16,6 +16,7 @@ export function Login() {
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [infoMessage, setInfoMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,48 +35,6 @@ export function Login() {
     }
   };
 
-  // const handleSignUp = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setInfoMessage('Wait for some time until you get a mail');
-
-  //   // Fetch all users and check for existing email
-  //   const { data, error: listUsersError } = await supabase.auth.admin.listUsers();
-  //   if (listUsersError) {
-  //     setError('Error fetching user data: ' + listUsersError.message);
-  //     return;
-  //   }
-  //   console.log(data);
-    
-  //   const existingUser = data?.users?.find((user) => user.email === email);
-
-  //   if (existingUser) {
-  //     toast.error('User already exists');
-  //     setInfoMessage('');
-  //     return;
-  //   }
-
-  //   // Proceed with sign-up
-  //   const { error: signUpError } = await supabase.auth.signUp({
-  //     email,
-  //     password,
-  //     options: {
-  //       data: {
-  //         name,
-  //       },
-  //     },
-  //   });
-
-  //   if (signUpError) {
-  //     setError(signUpError.message);
-  //     setInfoMessage('');
-  //   } else {
-  //     toast.success('A confirmation mail has been sent to your mail, confirm the signup in mail and you will be directed to the site.', {
-  //       autoClose: false,
-  //       closeOnClick: false,
-  //       draggable: false,
-  //     });
-  //   }
-  // };
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setInfoMessage('Wait for some time until you get a mail');
@@ -120,7 +79,6 @@ export function Login() {
       });
     }
   };
-  
 
   return (
     <div className="max-h-screen pt-20 pl-2 pr-2 flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -187,12 +145,18 @@ export function Login() {
               <div className="mt-1 relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-300"
                   required
                 />
+                <div
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="text-gray-400 w-5 h-5" /> : <Eye className="text-gray-400 w-5 h-5" />}
+                </div>
               </div>
             </div>
             <button
@@ -203,15 +167,14 @@ export function Login() {
             </button>
             {!isSignUp && (
               <div className="flex items-center justify-between">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
-              >
-                Forgot Password?
-              </Link>
-            </div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
             )}
-            
             {!isSignUp && (
               <div className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300">
                 Don't have an account?{' '}

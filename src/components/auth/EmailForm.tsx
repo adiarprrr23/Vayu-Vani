@@ -14,7 +14,7 @@ export function EmailForm({ email, setEmail, onSubmit, isLoading }: EmailFormPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit(e);
-    toast.success('Check mail to login');
+    toast.success('Check mail to reset password');
   };
 
   return (
