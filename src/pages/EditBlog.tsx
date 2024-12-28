@@ -19,29 +19,38 @@ export function EditBlog() {
   const navigate = useNavigate();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const { data, error } = await supabase
+      const { data: blogData, error: blogError } = await supabase
         .from('posts')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) {
-        console.error('Error fetching blog:', error);
+      if (blogError) {
+        console.error('Error fetching blog:', blogError);
       } else {
-        setBlog(data as Blog);
+        setBlog(blogData as Blog);
       }
       setLoading(false);
     };
 
+    const fetchCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
+      }
+    };
+
     fetchBlog();
+    fetchCurrentUser();
   }, [id]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!blog) return;
+    if (!blog || !currentUserId) return;
 
     const { error } = await supabase
       .from('posts')
@@ -52,6 +61,7 @@ export function EditBlog() {
         video_url: blog.video_url,
         excerpt: blog.excerpt,
         published: blog.published,
+        author_id: currentUserId, // Update the author_id with the current user's ID
       })
       .eq('id', id);
 

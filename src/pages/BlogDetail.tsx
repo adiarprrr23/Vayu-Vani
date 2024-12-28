@@ -14,28 +14,52 @@ interface Blog {
   excerpt: string;
 }
 
+interface Author {
+  name: string;
+  email: string;
+}
+
 export function BlogDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [blog, setBlog] = useState<Blog | null>(null);
+  const [author, setAuthor] = useState<Author | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const { data, error } = await supabase
+      const { data: blogData, error: blogError } = await supabase
         .from('posts')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) {
-        console.error('Error fetching blog:', error);
+      if (blogError) {
+        console.error('Error fetching blog:', blogError);
       } else {
-        setBlog(data as Blog);
+        setBlog(blogData as Blog);
+
+        const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers();
+        if (usersError) {
+          console.error('Error fetching users:', usersError);
+        } else {
+          const authorData = usersData.users.find((user: any) => user.id === blogData.author_id);
+          if (authorData) {
+            setAuthor({
+              name: authorData.user_metadata?.name || 'Unknown',
+              email: authorData.email || 'Unknown',
+            });
+          }
+        }
       }
     };
 
     fetchBlog();
   }, [id]);
+
+  const handleAdminClick = () => {
+    setShowTooltip(!showTooltip);
+  };
 
   if (!blog) {
     return (
@@ -82,7 +106,22 @@ export function BlogDetail() {
         </div>
         <div className="flex items-center gap-2">
           <User className="w-5 h-5" />
-          <span>Admin</span>
+          <span
+            className="relative group cursor-pointer"
+            onClick={handleAdminClick}
+          >
+            Admin
+            {author && (
+              <div
+                className={`absolute left-0 mt-2 w-48 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg transition-opacity duration-300 ${
+                  showTooltip ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`}
+              >
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{author.name}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{author.email}</p>
+              </div>
+            )}
+          </span>
         </div>
       </div>
 
