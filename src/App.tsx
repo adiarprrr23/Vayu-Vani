@@ -12,6 +12,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { NotFound } from './pages/NotFound';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { UpdatePassword } from './components/auth/UpdatePassword';
+import { TopicBlogs } from './pages/TopicBlogs';
 
 export function App() {
   return (
@@ -22,6 +23,7 @@ export function App() {
           {/* <main className="flex-grow"> */}
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/blogs/topic/:topicId" element={<TopicBlogs />} />
               <Route path="/blog/:id" element={<BlogDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
