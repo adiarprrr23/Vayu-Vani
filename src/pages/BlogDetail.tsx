@@ -25,6 +25,19 @@ export function BlogDetail() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [author, setAuthor] = useState<Author | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -58,8 +71,38 @@ export function BlogDetail() {
   }, [id]);
 
   const handleAdminClick = () => {
-    setShowTooltip(!showTooltip);
+    if (!isLargeScreen) {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+      setShowTooltip(true);
+      const timeout = setTimeout(() => {
+        setShowTooltip(false);
+      }, 5000);
+      setTooltipTimeout(timeout);
+    }
   };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (!event.target || !(event.target as HTMLElement).closest('.author-tooltip')) {
+      setShowTooltip(false);
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (showTooltip && !isLargeScreen) {
+      document.addEventListener('click', handleOutsideClick);
+    } else {
+      document.removeEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [showTooltip, isLargeScreen]);
 
   if (!blog) {
     return (
@@ -104,24 +147,20 @@ export function BlogDetail() {
           <Calendar className="w-5 h-5" />
           <span>{new Date(blog.created_at).toLocaleDateString()}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 relative author-tooltip"
+          onClick={handleAdminClick}
+          onMouseEnter={isLargeScreen ? () => setShowTooltip(true) : undefined}
+          onMouseLeave={isLargeScreen ? () => setShowTooltip(false) : undefined}
+        >
           <User className="w-5 h-5" />
-          <span
-            className="relative group cursor-pointer"
-            onClick={handleAdminClick}
-          >
-            Admin
-            {author && (
-              <div
-                className={`absolute left-0 mt-2 w-48 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg transition-opacity duration-300 ${
-                  showTooltip ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-              >
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{author.name}</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300">{author.email}</p>
-              </div>
-            )}
-          </span>
+          <span className="admin-text cursor-pointer">Admin</span>
+          {showTooltip && author && (
+            <div className="absolute left-0 mt-2 w-48 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg z-10">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{author.name}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{author.email}</p>
+            </div>
+          )}
         </div>
       </div>
 
