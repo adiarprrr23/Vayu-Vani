@@ -11,6 +11,7 @@ import { PrivateRoute } from './components/PrivateRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotFound } from './pages/NotFound';
 import { ForgotPassword } from './pages/ForgotPassword';
+import { UpdatePassword } from './components/auth/UpdatePassword';
 
 export function App() {
   return (
@@ -24,6 +25,7 @@ export function App() {
               <Route path="/blog/:id" element={<BlogDetail />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<UpdatePassword />} />
               <Route
                 path="/blogs"
                 element={
