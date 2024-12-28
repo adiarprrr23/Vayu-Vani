@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import DOMPurify from 'dompurify';
 
 interface Blog {
   id: string;
@@ -164,11 +165,12 @@ export function BlogDetail() {
         </div>
       </div>
 
-      <div className="prose max-w-none dark:prose-dark">
-        <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed whitespace-pre-line">
-          {blog.content}
-        </p>
-      </div>
+      <div
+        className="prose max-w-none dark:prose-dark dark:text-white" // Ensure text color is white in dark mode
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(blog.content),
+        }}
+      ></div>
 
       {blog.video_url && (
         <div className="mt-8">
