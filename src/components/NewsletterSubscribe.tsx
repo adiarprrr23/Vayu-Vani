@@ -86,7 +86,10 @@ export function NewsletterSubscribe() {
       </button>
 
       {isOpen && (
-        <div ref={dropdownRef} className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-50">
+        <div
+          ref={dropdownRef}
+          className="absolute right-0 mt-2 w-64 sm:w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-50"
+        >
           <div className="p-4">
             <h3 className={`font-semibold mb-4 ${commonStyles.heading}`}>
               Get Blog Updates
