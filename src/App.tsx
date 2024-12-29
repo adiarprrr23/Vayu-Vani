@@ -25,17 +25,18 @@ export function App() {
               <Route path="/" element={<Home />} />
               <Route path="/blogs/topic/:topicId" element={<TopicBlogs />} />
               <Route path="/blog/:id" element={<BlogDetail />} />
-              <Route path="/login" element={<Login />} />
+              {/* <Route path="/login" element={<Login />} /> */}
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<UpdatePassword />} />
-              <Route
+              <Route path="/blogs" element={<Blogs />} />
+              {/* <Route
                 path="/blogs"
                 element={
                   <PrivateRoute>
                     <Blogs />
                   </PrivateRoute>
                 }
-              />
+              /> */}
               <Route
                 path="/dashboard"
                 element={
