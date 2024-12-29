@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import DOMPurify from 'dompurify';
 
@@ -13,6 +13,7 @@ interface Blog {
   author_id: string;
   created_at: string;
   excerpt: string;
+  topic_id: string;
 }
 
 interface Author {
@@ -25,6 +26,7 @@ export function BlogDetail() {
   const navigate = useNavigate();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [author, setAuthor] = useState<Author | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
@@ -68,7 +70,21 @@ export function BlogDetail() {
       }
     };
 
+    const fetchBlogs = async () => {
+      const { data: blogsData, error: blogsError } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (blogsError) {
+        console.error('Error fetching blogs:', blogsError);
+      } else {
+        setBlogs(blogsData as Blog[]);
+      }
+    };
+
     fetchBlog();
+    fetchBlogs();
   }, [id]);
 
   const handleAdminClick = () => {
@@ -125,14 +141,18 @@ export function BlogDetail() {
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
+  const currentIndex = blogs.findIndex((b) => b.id === blog.id);
+  const previousBlog = currentIndex > 0 ? blogs[currentIndex - 1] : null;
+  const nextBlog = currentIndex < blogs.length - 1 ? blogs[currentIndex + 1] : null;
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 transition-colors">
       <button
-        onClick={() => navigate('/blogs')}
+        onClick={() => navigate(`/blogs/topic/${blog.topic_id}`)} // Navigate to corresponding topic blogs
         className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-8"
       >
         <ArrowLeft className="w-5 h-5" />
-        Back to blogs
+        Back to topic blogs
       </button>
 
       <img
@@ -186,6 +206,27 @@ export function BlogDetail() {
           </div>
         </div>
       )}
+
+      <div className="flex justify-between mt-8">
+        {previousBlog && (
+          <button
+            onClick={() => navigate(`/blog/${previousBlog.id}`)}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Previous
+          </button>
+        )}
+        {nextBlog && (
+          <button
+            onClick={() => navigate(`/blog/${nextBlog.id}`)}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white ml-auto"
+          >
+            Next
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
