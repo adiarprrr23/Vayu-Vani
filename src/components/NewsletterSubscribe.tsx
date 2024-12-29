@@ -2,24 +2,13 @@ import { useState } from 'react';
 import { Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { commonStyles } from '../styles/common';
-import CryptoJS from 'crypto-js';
-
-const SECRET_KEY = import.meta.env.VITE_SECRET_KEY || 'default-secret-key';
 
 export function NewsletterSubscribe() {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  const encryptPhoneNumber = (phoneNumber: string) => {
-    return CryptoJS.AES.encrypt(phoneNumber, SECRET_KEY).toString();
-  };
-
-  const hashPhoneNumber = (phoneNumber: string) => {
-    return CryptoJS.SHA256(phoneNumber).toString();
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,13 +16,10 @@ export function NewsletterSubscribe() {
     setMessage(null);
 
     try {
-      const hashedPhoneNumber = hashPhoneNumber(phoneNumber);
-      const encryptedPhoneNumber = encryptPhoneNumber(phoneNumber);
-
       const { data: existingSubscriber, error: checkError } = await supabase
         .from('newsletter_subscribers')
-        .select('phone_number_hash')
-        .eq('phone_number_hash', hashedPhoneNumber)
+        .select('email')
+        .eq('email', email)
         .single();
 
       if (checkError && checkError.code !== 'PGRST116') {
@@ -43,12 +29,12 @@ export function NewsletterSubscribe() {
       if (existingSubscriber) {
         setMessage({
           type: 'error',
-          text: 'This user is already subscribed.',
+          text: 'This email is already subscribed.',
         });
       } else {
         const { error } = await supabase
           .from('newsletter_subscribers')
-          .insert({ name, phone_number: encryptedPhoneNumber, phone_number_hash: hashedPhoneNumber });
+          .insert({ name, email });
 
         if (error) throw error;
 
@@ -57,7 +43,7 @@ export function NewsletterSubscribe() {
           text: "Thanks for subscribing! You'll receive updates about new blog posts.",
         });
         setName('');
-        setPhoneNumber('');
+        setEmail('');
         setTimeout(() => setIsOpen(false), 3000);
       }
     } catch (error) {
@@ -99,10 +85,10 @@ export function NewsletterSubscribe() {
               </div>
               <div>
                 <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="Your phone number"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email"
                   className={commonStyles.input}
                   required
                 />
