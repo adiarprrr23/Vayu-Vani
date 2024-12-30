@@ -139,7 +139,7 @@ export function Home() {
             <span className="text-indigo-600 dark:text-indigo-400"> Vayu Jeevottama</span>
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-700 dark:text-gray-300 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-          (Lord Vishnu is the Supreme Being, and Lord Vayu is the supreme among all the souls.)
+          (Lord Vishnu is the Supreme Being, and Lord Vayu(Who had taken avatar as Hanuman,Bhimasena,Madhvacharya) is the supreme among all the souls.)
           </p>
           <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             <button
