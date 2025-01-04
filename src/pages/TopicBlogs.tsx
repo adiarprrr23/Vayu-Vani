@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { commonStyles } from '../styles/common';
+import { Loading } from './Loading';
+import { NotFound } from './NotFound';
 
 interface Topic {
   id: string;
@@ -26,6 +28,8 @@ interface Blog {
 export function TopicBlogs() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [topic, setTopic] = useState<Topic | null>(null);
   const [topicBlogs, setTopicBlogs] = useState<Blog[]>([]);
   const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
@@ -34,37 +38,46 @@ export function TopicBlogs() {
 
   useEffect(() => {
     const fetchTopicAndBlogs = async () => {
-      const { data: topicData, error: topicError } = await supabase
-        .from('topics')
-        .select('*')
-        .eq('id', topicId)
-        .single();
+      try {
+        const { data: topicData, error: topicError } = await supabase
+          .from('topics')
+          .select('*')
+          .eq('id', topicId)
+          .single();
 
-      if (topicError) {
-        console.error('Error fetching topic:', topicError);
-      } else {
-        setTopic(topicData as Topic);
-      }
+        if (topicError) {
+          throw topicError;
+        } else {
+          setTopic(topicData as Topic);
+        }
 
-      const { data: blogsData, error: blogsError } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('topic_id', topicId);
+        const { data: blogsData, error: blogsError } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('topic_id', topicId)
+          .order('created_at', { ascending: true });
 
-      if (blogsError) {
-        console.error('Error fetching blogs:', blogsError);
-      } else {
-        setTopicBlogs(blogsData as Blog[]);
-      }
+        if (blogsError) {
+          throw blogsError;
+        } else {
+          setTopicBlogs(blogsData as Blog[]);
+        }
 
-      const { data: allBlogsData, error: allBlogsError } = await supabase
-        .from('posts')
-        .select('*');
+        const { data: allBlogsData, error: allBlogsError } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: true });
 
-      if (allBlogsError) {
-        console.error('Error fetching all blogs:', allBlogsError);
-      } else {
-        setAllBlogs(allBlogsData as Blog[]);
+        if (allBlogsError) {
+          throw allBlogsError;
+        } else {
+          setAllBlogs(allBlogsData as Blog[]);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        setError(true);
       }
     };
 
@@ -83,6 +96,14 @@ export function TopicBlogs() {
       setSearchResults(results);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <NotFound />;
+  }
 
   if (!topic) {
     return (

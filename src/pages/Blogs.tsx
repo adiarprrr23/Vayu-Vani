@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { commonStyles } from '../styles/common';
 import { TopicCard } from '../components/TopicCard';
+import { Loading } from './Loading';
+import { NotFound } from './NotFound';
 
 interface Blog {
   id: string;
@@ -29,28 +31,45 @@ export function Blogs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchBlogsAndTopics = async () => {
-      const { data: blogsData, error: blogsError } = await supabase.from('posts').select('*');
-      if (blogsError) {
-        console.error('Error fetching blogs:', blogsError);
-      } else {
-        setBlogs(blogsData as Blog[]);
-      }
+      try {
+        const { data: blogsData, error: blogsError } = await supabase.from('posts').select('*');
+        if (blogsError) {
+          throw blogsError;
+        } else {
+          setBlogs(blogsData as Blog[]);
+        }
 
-      const { data: topicsData, error: topicsError } = await supabase.from('topics').select('*');
-      if (topicsError) {
-        console.error('Error fetching topics:', topicsError);
-      } else {
-        setTopics(topicsData as Topic[]);
+        const { data: topicsData, error: topicsError } = await supabase.from('topics').select('*');
+        if (topicsError) {
+          throw topicsError;
+        } else {
+          setTopics(topicsData as Topic[]);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        setError(true);
       }
     };
 
     fetchBlogsAndTopics();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <NotFound />;
+  }
 
   const filteredTopics = topics.filter(topic =>
     topic.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
